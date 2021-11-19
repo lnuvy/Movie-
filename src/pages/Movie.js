@@ -60,9 +60,10 @@ export default function Movie() {
 
             {mov ? 
                 <div className="movie-container">
+                    <img src={mov.medium_cover_image}/>
                     <h1>{mov.title_long}</h1>
-                    <p>{mov.genres.join(' ')}</p>
-                    <span>{mov.language}</span>
+                    <p>장르 : {mov.genres.join(' ')}</p>
+                    <span>언어 : {mov.language}</span>
                 </div> : <h1>Movie Page</h1>
             }
                 
