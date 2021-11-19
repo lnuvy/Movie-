@@ -1,0 +1,3 @@
+.movie-container{ width: 400px; margin: 20px auto; padding: 20px; background: orangered; color: white; border-radius: 10px; } .movie-item{ text-decoration: none; display: flex; flex-direction: column; color: lightsalmon; font-size: 1.5rem; font-weight: bold; } .movie-item:hover{ color: orangered; }
+
+.filter-movie{ all: unset; margin: 20px; width: 400px; height: 50px; border: 2px solid lightgreen; border-radius: 15px; text-align: left; padding-left: 15px; color: lightgreen; font-size: 1.2rem; font-weight: bold; } .filter-movie::placeholder{ color: lightgreen; font-size: 1.2rem; font-weight: bold; }

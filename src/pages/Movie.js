@@ -1,59 +1,84 @@
-import React, { Children } from "react";
-import { useParams, NavLink, useSearchParams, useLocation } from 'react-router-dom';
-import movieData from "../movieData";
+import React, { Children, useEffect, useState } from "react";
+import { useParams, Link, NavLink, useSearchParams, useLocation } from 'react-router-dom';
+import axios from "axios";
+// import movies from "../useReturnData";
+import './Movie.css'
 
 export default function Movie() {
     const params = useParams();
-    let [searchParams, setSearchParams] = useSearchParams()
+    const [movies, setMovies] = useState([])
+
+    // 선택된 NavLink 활성화 스타일
     const applyActiveColor = ({ isActive }) => (isActive ? {color: 'orangered'} : {})
+
+    // 키워드 검색
+    const [searchParams, setSearchParams] = useSearchParams() // const Test
+
+
+    useEffect( () => {
+        axios('https://yts.mx/api/v2/list_movies.json?limit=12')
+            .then( res => {
+            console.log(res.data.data.movies)
+            return res.data.data.movies;
+        })
+        .then((res) => {
+            const m = res
+            setMovies(m)
+        })
+      }, [])
 
     const changeQueryString = (e) => {
         const filter = e.target.value
-        // console.log(filter)
-
         if(filter) {
             setSearchParams({ filter })
         } else {
-            setSearchParams({})
+        setSearchParams({})
         }
     }
 
     const QueryNavLink = ({ to, children, ...props }) => {
         const location = useLocation()
-        // console.log(location)
         return <NavLink to={to + location.search} {...props}>{children}</NavLink>
     }
 
-    const postsFiltered = movieData
-        .filter( movie => {
-            const filter = searchParams.get('filter')
+
+    // const mov = movies[params.movieId]
+
+    const moviesFiltered = movies
+        .filter( m => {
+            const filter = searchParams.get('filter');
             if(!filter) return true;
-            const title = movie.title.toLowerCase()
+            const title = m.title.toLowerCase()
             return title.includes(filter.toLowerCase())
         })
-        
-
-        const movie = postsFiltered[params.id]
+    const mov = moviesFiltered[params.movieId]
 
     return (
         <>
+            <br/>
+            <input className="filter-movie" value={searchParams.get('filter') || ""} onChange={changeQueryString} placeholder="Search ..."></input>
 
-            <br/><input className="filter-movie" value={searchParams.get('filter') || ""} onChange={changeQueryString} placeholder="Search movie..."/>
-
-            {movie ?
+            {mov ? 
                 <div className="movie-container">
-                <h1>{movie.title}</h1>
-                <p>{movie.content}</p>
-                <span>{movie.created}</span>
-                </div> :
-            <h1>정보없음</h1>}
-
-            {postsFiltered
-                .map((movie, id) => {
-                    return (
-                        <QueryNavLink key={id} to={`/movieData/${id}`} className="movie-item" style={applyActiveColor}>{movie.title}</QueryNavLink>
-                    )
-                })}
+                    <h1>{mov.title_long}</h1>
+                    <p>{mov.genres.join(' ')}</p>
+                    <span>{mov.language}</span>
+                </div> : <h1>Movie Page</h1>
+            }
+                
+            {movies
+                .filter( mov => {
+                    const filter = searchParams.get('filter')
+                    if(!filter) return true;
+                    const title = mov.title.toLowerCase()
+                    return title.includes(filter.toLowerCase())
+                })
+                .map((mov, id) => {
+                return (
+                    <QueryNavLink key={id} to={`/movies/${id}`} className="movie-item" style={applyActiveColor}>{mov.title_long}</QueryNavLink>
+                )
+            })}
+                
         </>
     )
 }
